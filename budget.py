@@ -1,5 +1,3 @@
-from functools import total_ordering
-
 class Category:
     ledger = None
     name = ''
@@ -13,7 +11,10 @@ class Category:
         string = '*' * stars_number + self.name + '*' * stars_number + '\n'
 
         for item in self.ledger:
-            (desc, amt) = (item['description'][:23], str(item['amount'])[:7])
+        
+            (desc, amt) = (item['description'][:23], str( round(item['amount'], 2) )[:7])
+            while amt[-3:][0] != '.' : amt += '0'
+            
             string += desc + ' ' * (30 - len(desc) - len(amt)) + amt + '\n'
 
         string += 'Total: ' + str(self.get_balance())
@@ -22,13 +23,13 @@ class Category:
 
     def deposit(self, amount, description=''):
         self.ledger.append(
-            {'amount': float(amount), 'description': description})
+            {'amount': round(float(amount), 2), 'description': description})
         return None
 
     def withdraw(self, amount, description=''):
         if self.check_funds(amount):
             self.ledger.append(
-                {'amount': -float(amount), 'description': description})
+                {'amount': -round(float(amount), 2), 'description': description})
             return True
         return False
 
@@ -46,15 +47,14 @@ class Category:
         return False
 
     def check_funds(self, amount):
-        return self.get_balance() > amount
-
+        return self.get_balance() >= amount
 
 def create_spend_chart(categories):
     def helper(categorie_name):
         return len(categorie_name)
 
     perc = dict()
-    string = 'Percentage spent by category \n'
+    string = 'Percentage spent by category\n'
     label = [((3 - len(str(x))) * " " + str(x) + '|')
              for x in range(100, -1, -10)]
 
@@ -82,23 +82,20 @@ def create_spend_chart(categories):
         string += label[i] + ' '
         for key in perc:
             string += perc[key][i] + '  '
-        string = string.rstrip() + '\n'
+        string += '\n'
 
     string += '    ' + '-' * (len(categories) * 3 + 1) + '\n'
 
-    longest_name = max(perc, key=helper)
-    for i in range(len(longest_name)) :
+    for i in range(len(max(perc, key=helper))) :
         string += '     '
         for cat in perc :
             try :
                 string += cat[i:i+1][0] + '  '
             except :
                 string += '   '
-        string = string.rstrip() + '\n'
+        string += '\n'
         
-    
-
-    return string
+    return string[:len(string) - 1]
 
 
 Food = Category('Food')
