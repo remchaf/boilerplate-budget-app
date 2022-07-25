@@ -1,6 +1,4 @@
 from functools import total_ordering
-from tkinter.tix import AUTO
-
 
 class Category:
     ledger = None
@@ -52,9 +50,8 @@ class Category:
 
 
 def create_spend_chart(categories):
-
-    def helper(cat):
-        return len(cat)
+    def helper(categorie_name):
+        return len(categorie_name)
 
     perc = dict()
     string = 'Percentage spent by category \n'
@@ -77,7 +74,7 @@ def create_spend_chart(categories):
             if key_percentage >= i:
                 key_arr.append('o')
             else:
-                key_arr.append('')
+                key_arr.append(' ')
 
         perc[key] = key_arr
 
